@@ -45,8 +45,6 @@ for i in range(0,dfx.shape[0]-50):
  elo[n1] = elo1 + 20 * ( g * (1-pd) - d * pd)  
  elo[n2] = elo2 - 20 * ( g * (1-pd) - d * pd)
 
- dfw.iloc[i,11]=elo1
- dfw.iloc[i,12]=elo2
  if i>1800:   #become training start estimator 
   if elo1>m:
     nom=n1
