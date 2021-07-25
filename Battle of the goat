@@ -1,0 +1,62 @@
+import os
+import pandas as pd, numpy as np
+from datetime import datetime
+import time
+from google.colab import files
+import io
+uploaded = files.upload()
+
+df = pd.read_csv(io.BytesIO(uploaded['df2.csv']))
+
+df
+
+dfx=df[['Winner','Loser','PSW','PSL','Date','WRank','LRank','Round','Court','Surface','Tournament']]
+dfx=dfx.dropna()
+dfx
+
+
+
+
+dfx["elo1"] = np.nan
+dfx["elo2"] = np.nan
+dfw = dfx.copy()
+
+
+elo={}
+m1={}
+m2={}
+for i in range(1,dfx.shape[0]-1):
+  elo[dfx.iloc[i,0]] = 1200
+  elo[dfx.iloc[i,1]] = 1200
+
+m=0
+nomold=''
+liste = []
+for i in range(0,dfx.shape[0]-50):
+ g = 1/dfx.iloc[i,2]
+ d = 1/dfx.iloc[i,3]
+ n1 = dfx.iloc[i,0]
+ n2 = dfx.iloc[i,1]
+ elo1 = elo[n1]
+ elo2 = elo[n2]
+ pd= 1/(1+10**((elo2-elo1)/400))
+ elo[n1] = elo1 + 20 * ( g * (1-pd) - d * pd)  
+ elo[n2] = elo2 - 20 * ( g * (1-pd) - d * pd)
+
+ dfw.iloc[i,11]=elo1
+ dfw.iloc[i,12]=elo2
+ if i>1800:
+  if elo1>m:
+    nom=n1
+    m=elo1
+  if elo2>m:
+    nom=n2
+    m=elo2
+  if nom != nomold:
+    nomold=nom
+    liste.append('Max pts: ' + str(m) + '     '+nom + '         Date: '+dfx.iloc[i,4])
+
+liste.reverse()
+liste
+
+ 
